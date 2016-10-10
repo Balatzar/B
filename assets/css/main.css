@@ -3,11 +3,13 @@ html, body {
   height: 100%;
   margin: 0;
   padding: 0;
+  background-color: #e3dbbc;
 }
 
 .card-task {
   width: 400px;
   margin: 20px;
+  display: inline-block;
 }
 
 .card-task .label {
@@ -25,4 +27,10 @@ html, body {
 
 .all-labels {
   margin: 20px;
+}
+
+.timer {
+  text-align: center;
+  margin-top: 33px;
+  font-size: 30px;
 }

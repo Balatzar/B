@@ -15,6 +15,7 @@ const CardTask = React.createClass({
           <RaisedButton
             label="Commencer"
             primary={true}
+            onClick={this.props.onStart}
           />
           <RaisedButton
             label="Editer"

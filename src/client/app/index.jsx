@@ -1,6 +1,9 @@
 import React from 'react';
 import {render} from 'react-dom';
 
+const path = require('path')
+console.log(path.resolve(__dirname))
+
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 
@@ -9,6 +12,7 @@ import CardForm from './components/CardForm.jsx';
 import TaskLabel from './components/TaskLabel.jsx';
 import LabelForm from './components/LabelForm.jsx';
 import AllLabels from './components/AllLabels.jsx';
+import Timer from './components/Timer.jsx';
 
 import Test from './components/test.jsx';
 
@@ -44,6 +48,8 @@ const App = React.createClass({
     return {
       tasks,
       labels,
+      time: 20,
+      inTask: false,
     }
   },
 
@@ -65,6 +71,19 @@ const App = React.createClass({
     console.log(this.state);
   },
 
+  startTask(title) {
+    this.setState({ inTask: true, time: 20 });
+    const timer = setInterval(() => {
+      if (this.state.time) {
+        this.setState({ time: this.state.time - 1 });
+      } else {
+        this.setState({ inTask: false });
+        clearInterval(timer);
+        dialog.showMessageBox({ type: "info", message: title })
+      }
+    }, 1000);
+  },
+
   addLabel() {
     const label = localStorage.getItem("labelValue");
     const labels = this.state.labels;
@@ -81,7 +100,7 @@ const App = React.createClass({
     localStorage.setItem("labels", JSON.stringify(labels));
     console.log(this.state);
   },
-
+  
   render() {
     return (
       <MuiThemeProvider>
@@ -92,8 +111,10 @@ const App = React.createClass({
           <Divider />
           {this.state.tasks.length ? this.state.tasks.map((t, i) => {
             const boundDelete = this.removeTask.bind(this, t.title);
-            return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} />
+            const boundStart = this.startTask.bind(this, t.title);
+            return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
           }) : "Pas de tâche."}
+          {this.state.inTask ? <Timer time={this.state.time} /> : ""}
         </div>
       </MuiThemeProvider>
     );
