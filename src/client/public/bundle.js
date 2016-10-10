@@ -84,10 +84,6 @@
 
 	var _Timer2 = _interopRequireDefault(_Timer);
 
-	var _test = __webpack_require__(415);
-
-	var _test2 = _interopRequireDefault(_test);
-
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var path = __webpack_require__(418);
@@ -40843,74 +40839,7 @@
 	exports.default = Timer;
 
 /***/ },
-/* 415 */
-/***/ function(module, exports, __webpack_require__) {
-
-	'use strict';
-
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _react = __webpack_require__(1);
-
-	var _react2 = _interopRequireDefault(_react);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var Todo = _react2.default.createClass({
-	  displayName: 'Todo',
-
-	  render: function render() {
-	    return _react2.default.createElement(
-	      'div',
-	      { onClick: this.props.onClick },
-	      this.props.title
-	    );
-	  },
-
-	  //this component will be accessed by the parent through the `ref` attribute
-	  animate: function animate() {
-	    console.log('Pretend %s is animating', this.props.title);
-	  }
-	});
-
-	var Todos = _react2.default.createClass({
-	  displayName: 'Todos',
-
-	  getInitialState: function getInitialState() {
-	    return { items: ['Apple', 'Banana', 'Cranberry'] };
-	  },
-
-	  handleClick: function handleClick(index) {
-	    console.log(this);
-	    var items = this.state.items.filter(function (item, i) {
-	      return index !== i;
-	    });
-	    this.setState({ items: items }, function () {
-	      if (items.length === 1) {
-	        this.refs.item0.animate();
-	      }
-	    }.bind(this));
-	  },
-
-	  render: function render() {
-	    var _this = this;
-
-	    return _react2.default.createElement(
-	      'div',
-	      null,
-	      this.state.items.map(function (item, i) {
-	        var boundClick = _this.handleClick.bind(_this, i);
-	        return _react2.default.createElement(Todo, { onClick: boundClick, key: i, title: item, ref: 'item' + i });
-	      })
-	    );
-	  }
-	});
-
-	exports.default = Todos;
-
-/***/ },
+/* 415 */,
 /* 416 */,
 /* 417 */,
 /* 418 */

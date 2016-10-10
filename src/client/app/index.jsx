@@ -14,8 +14,6 @@ import LabelForm from './components/LabelForm.jsx';
 import AllLabels from './components/AllLabels.jsx';
 import Timer from './components/Timer.jsx';
 
-import Test from './components/test.jsx';
-
 const style = {
   height: 100,
   width: 100,
