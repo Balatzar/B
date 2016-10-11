@@ -133,12 +133,6 @@ const App = React.createClass({
             const boundStart = this.startTask.bind(this, t.title);
             return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
           }) : "Pas de tâche."}
-          {this.state.inTask ? <div className="foreground"><Timer
-            title={this.state.currentTask}
-            time={this.state.time}
-            onClick={this.state.freeze ? this.resumeTask : this.freezeTask}
-            label={this.state.freeze ? "Reprendre" : "Pause"}
-          /></div> : ""}
           <Divider />
           <Subheader inset={true}>Fini</Subheader>
           {this.state.tasks.length ? this.state.tasks.map((t, i) => {
@@ -147,6 +141,13 @@ const App = React.createClass({
             const boundStart = this.startTask.bind(this, t.title);
             return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
           }) : "Pas de tâche."}
+
+          {this.state.inTask ? <div className="foreground"><Timer
+            title={this.state.currentTask}
+            time={this.state.time}
+            onClick={this.state.freeze ? this.resumeTask : this.freezeTask}
+            label={this.state.freeze ? "Reprendre" : "Pause"}
+          /></div> : ""}
         </div>
       </MuiThemeProvider>
     );

@@ -221,16 +221,6 @@
 	          var boundStart = _this2.startTask.bind(_this2, t.title);
 	          return _react2.default.createElement(_CardTask2.default, { title: t.title, labels: t.labels, key: i, onDelete: boundDelete, onStart: boundStart });
 	        }) : "Pas de tâche.",
-	        this.state.inTask ? _react2.default.createElement(
-	          'div',
-	          { className: 'foreground' },
-	          _react2.default.createElement(_Timer2.default, {
-	            title: this.state.currentTask,
-	            time: this.state.time,
-	            onClick: this.state.freeze ? this.resumeTask : this.freezeTask,
-	            label: this.state.freeze ? "Reprendre" : "Pause"
-	          })
-	        ) : "",
 	        _react2.default.createElement(_Divider2.default, null),
 	        _react2.default.createElement(
 	          _Subheader2.default,
@@ -242,7 +232,17 @@
 	          var boundDelete = _this2.removeTask.bind(_this2, t.title);
 	          var boundStart = _this2.startTask.bind(_this2, t.title);
 	          return _react2.default.createElement(_CardTask2.default, { title: t.title, labels: t.labels, key: i, onDelete: boundDelete, onStart: boundStart });
-	        }) : "Pas de tâche."
+	        }) : "Pas de tâche.",
+	        this.state.inTask ? _react2.default.createElement(
+	          'div',
+	          { className: 'foreground' },
+	          _react2.default.createElement(_Timer2.default, {
+	            title: this.state.currentTask,
+	            time: this.state.time,
+	            onClick: this.state.freeze ? this.resumeTask : this.freezeTask,
+	            label: this.state.freeze ? "Reprendre" : "Pause"
+	          })
+	        ) : ""
 	      )
 	    );
 	  }
