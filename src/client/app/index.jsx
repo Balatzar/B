@@ -12,9 +12,11 @@ import CardForm from './components/CardForm.jsx';
 import TaskLabel from './components/TaskLabel.jsx';
 import LabelForm from './components/LabelForm.jsx';
 import AllLabels from './components/AllLabels.jsx';
-import Timer from './components/Timer.jsx';
+import InTask from './components/InTask.jsx';
+import InPause from './components/InPause.jsx';
 
-const time = 1200;
+const time = 10;
+const timePause = 10;
 
 const tapEvent = require('react-tap-event-plugin');  
 tapEvent();
@@ -31,9 +33,7 @@ if (!labels) {
   labels = [];
 }
 
-localStorage.setItem("taskLabels", "[]");
-
-console.log(tasks)
+localStorage.setItem("taskLabels", "[]")
 
 const App = React.createClass({
   getInitialState() {
@@ -42,14 +42,20 @@ const App = React.createClass({
       labels,
       time,
       inTask: false,
+      inPause: false,
       currentTask: "",
       freeze: false,
+      funnies: ["http://imgur.com/"],
+      restart: false,
     }
   },
 
   timer: null,
 
   startTimer() {
+    if (!this.state.time) {
+      this.setState({ time });
+    }
     this.timer = setInterval(() => {
       if (this.state.time) {
         this.setState({ time: this.state.time - 1 });
@@ -57,8 +63,36 @@ const App = React.createClass({
         clearInterval(this.timer);
         this.finishTask();
         this.setState({ inTask: false });
+        this.startPause();
       }
     }, 1000);
+  },
+  
+  startPause() {
+    this.setState({ inPause: true, time: timePause });
+    this.timer = setInterval(() => {
+      if (this.state.time) {
+        this.setState({ time: this.state.time - 1 });
+      } else {
+        clearInterval(this.timer)
+        this.setState({ inPause: false });
+        if (this.state.restart) {
+          this.startTimer();
+          this.setState({ inTask: true, restart: false });
+        } else {
+          this.setState({ tasks, currentTask: "" });
+        }
+      }
+    }, 1000);
+  },
+  
+  restartTask() {
+    this.setState({ restart: true });
+    const tasks = this.state.tasks.map(t => {
+      const times = t.times ? t.times + 1 : 1;
+      return t.title === this.state.currentTask ? Object.assign(t, { times }) : t;
+    });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
   },
 
   addTask() {
@@ -70,6 +104,11 @@ const App = React.createClass({
     this.refs.CardForm.resetForm();
     localStorage.setItem("tasks", JSON.stringify(tasks));
     console.log(this.state);
+  },
+  
+  createAndStartTask() {
+    this.addTask();
+    this.startTask(localStorage.getItem("taskValue"));
   },
 
   removeTask(title) {
@@ -88,7 +127,6 @@ const App = React.createClass({
   finishTask() {
     const currentTask = this.state.currentTask;
     const tasks = this.state.tasks.map(t => t.title === currentTask ? Object.assign(t, { finish: true }) : t);
-    this.setState({ tasks, currentTask: "" });
     localStorage.setItem("tasks", JSON.stringify(tasks));
     console.log(this.state);
   },
@@ -124,7 +162,7 @@ const App = React.createClass({
     return (
       <MuiThemeProvider>
         <div>
-          <CardForm onClick={this.addTask} labels={this.state.labels} ref="CardForm" />
+          <CardForm onClick={this.addTask} onStart={this.createAndStartTask} labels={this.state.labels} ref="CardForm" />
           <LabelForm onClick={this.addLabel} ref="LabelForm" />
           <AllLabels onClick={this.deleteLabel} labels={this.state.labels} />
           <Divider />
@@ -144,12 +182,20 @@ const App = React.createClass({
             return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
           }) : "Pas de tâche."}
 
-          {this.state.inTask ? <div className="foreground"><Timer
+          {this.state.inTask ? <InTask
             title={this.state.currentTask}
             time={this.state.time}
             onClick={this.state.freeze ? this.resumeTask : this.freezeTask}
             label={this.state.freeze ? "Reprendre" : "Pause"}
-          /></div> : ""}
+          /> : ""}
+
+          {this.state.inPause ? <InPause
+            title={this.state.currentTask}
+            funnies={this.state.funnies}
+            time={this.state.time}
+            onClick={this.restartTask}
+            restart={this.state.restart}
+          /> : ""}
         </div>
       </MuiThemeProvider>
     );

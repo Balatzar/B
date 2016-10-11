@@ -60,6 +60,10 @@ const CardForm = React.createClass({
           primary={true}
           onClick={this.props.onClick}
         />
+        <RaisedButton
+          label="Commencer"
+          onClick={this.props.onStart}
+        />
       </div>
     )
   }
