@@ -3,6 +3,7 @@ import {render} from 'react-dom';
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
+import Subheader from 'material-ui/Subheader';
 
 import CardTask from './components/CardTask.jsx';
 import CardForm from './components/CardForm.jsx';
@@ -10,6 +11,8 @@ import TaskLabel from './components/TaskLabel.jsx';
 import LabelForm from './components/LabelForm.jsx';
 import AllLabels from './components/AllLabels.jsx';
 import Timer from './components/Timer.jsx';
+
+const time = 10;
 
 const tapEvent = require('react-tap-event-plugin');  
 tapEvent();
@@ -35,7 +38,7 @@ const App = React.createClass({
     return {
       tasks,
       labels,
-      time: 20,
+      time,
       inTask: false,
       currentTask: "",
       freeze: false,
@@ -49,8 +52,9 @@ const App = React.createClass({
       if (this.state.time) {
         this.setState({ time: this.state.time - 1 });
       } else {
-        this.setState({ inTask: false, currentTask: "" });
         clearInterval(this.timer);
+        this.finishTask();
+        this.setState({ inTask: false });
       }
     }, 1000);
   },
@@ -74,9 +78,17 @@ const App = React.createClass({
   },
 
   startTask(title) {
-    this.setState({ inTask: true, time: 20 });
+    this.setState({ inTask: true, time });
     this.setState({ currentTask: title });
     this.startTimer();
+  },
+
+  finishTask() {
+    const currentTask = this.state.currentTask;
+    const tasks = this.state.tasks.map(t => t.title === currentTask ? Object.assign(t, { finish: true }) : t);
+    this.setState({ tasks, currentTask: "" });
+    localStorage.setItem("tasks", JSON.stringify(tasks));
+    console.log(this.state);
   },
 
   freezeTask() {
@@ -114,7 +126,9 @@ const App = React.createClass({
           <LabelForm onClick={this.addLabel} ref="LabelForm" />
           <AllLabels onClick={this.deleteLabel} labels={this.state.labels} />
           <Divider />
+          <Subheader inset={true}>A faire</Subheader>
           {this.state.tasks.length ? this.state.tasks.map((t, i) => {
+            if (t.finish) return;
             const boundDelete = this.removeTask.bind(this, t.title);
             const boundStart = this.startTask.bind(this, t.title);
             return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
@@ -125,6 +139,14 @@ const App = React.createClass({
             onClick={this.state.freeze ? this.resumeTask : this.freezeTask}
             label={this.state.freeze ? "Reprendre" : "Pause"}
           /></div> : ""}
+          <Divider />
+          <Subheader inset={true}>Fini</Subheader>
+          {this.state.tasks.length ? this.state.tasks.map((t, i) => {
+            if (!t.finish) return;
+            const boundDelete = this.removeTask.bind(this, t.title);
+            const boundStart = this.startTask.bind(this, t.title);
+            return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
+          }) : "Pas de tâche."}
         </div>
       </MuiThemeProvider>
     );

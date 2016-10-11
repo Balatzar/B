@@ -44,7 +44,7 @@
 /* 0 */
 /***/ function(module, exports, __webpack_require__) {
 
-	/* WEBPACK VAR INJECTION */(function(__dirname) {'use strict';
+	'use strict';
 
 	var _react = __webpack_require__(1);
 
@@ -59,6 +59,10 @@
 	var _Divider = __webpack_require__(316);
 
 	var _Divider2 = _interopRequireDefault(_Divider);
+
+	var _Subheader = __webpack_require__(398);
+
+	var _Subheader2 = _interopRequireDefault(_Subheader);
 
 	var _CardTask = __webpack_require__(325);
 
@@ -86,16 +90,7 @@
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-	var path = __webpack_require__(418);
-	console.log(path.resolve(__dirname));
-
-	var style = {
-	  height: 100,
-	  width: 100,
-	  margin: 20,
-	  textAlign: 'center',
-	  display: 'inline-block'
-	};
+	var time = 10;
 
 	var tapEvent = __webpack_require__(419);
 	tapEvent();
@@ -122,9 +117,28 @@
 	    return {
 	      tasks: tasks,
 	      labels: labels,
-	      time: 20,
-	      inTask: false
+	      time: time,
+	      inTask: false,
+	      currentTask: "",
+	      freeze: false
 	    };
+	  },
+
+
+	  timer: null,
+
+	  startTimer: function startTimer() {
+	    var _this = this;
+
+	    this.timer = setInterval(function () {
+	      if (_this.state.time) {
+	        _this.setState({ time: _this.state.time - 1 });
+	      } else {
+	        clearInterval(_this.timer);
+	        _this.finishTask();
+	        _this.setState({ inTask: false });
+	      }
+	    }, 1000);
 	  },
 	  addTask: function addTask() {
 	    var title = localStorage.getItem("taskValue");
@@ -145,18 +159,26 @@
 	    console.log(this.state);
 	  },
 	  startTask: function startTask(title) {
-	    var _this = this;
-
-	    this.setState({ inTask: true, time: 20 });
-	    var timer = setInterval(function () {
-	      if (_this.state.time) {
-	        _this.setState({ time: _this.state.time - 1 });
-	      } else {
-	        _this.setState({ inTask: false });
-	        clearInterval(timer);
-	        dialog.showMessageBox({ type: "info", message: title });
-	      }
-	    }, 1000);
+	    this.setState({ inTask: true, time: time });
+	    this.setState({ currentTask: title });
+	    this.startTimer();
+	  },
+	  finishTask: function finishTask() {
+	    var currentTask = this.state.currentTask;
+	    var tasks = this.state.tasks.map(function (t) {
+	      return t.title === currentTask ? Object.assign(t, { finish: true }) : t;
+	    });
+	    this.setState({ tasks: tasks, currentTask: "" });
+	    localStorage.setItem("tasks", JSON.stringify(tasks));
+	    console.log(this.state);
+	  },
+	  freezeTask: function freezeTask() {
+	    this.setState({ freeze: true });
+	    clearInterval(this.timer);
+	  },
+	  resumeTask: function resumeTask() {
+	    this.setState({ freeze: false });
+	    this.startTimer();
 	  },
 	  addLabel: function addLabel() {
 	    var label = localStorage.getItem("labelValue");
@@ -188,19 +210,45 @@
 	        _react2.default.createElement(_LabelForm2.default, { onClick: this.addLabel, ref: 'LabelForm' }),
 	        _react2.default.createElement(_AllLabels2.default, { onClick: this.deleteLabel, labels: this.state.labels }),
 	        _react2.default.createElement(_Divider2.default, null),
+	        _react2.default.createElement(
+	          _Subheader2.default,
+	          { inset: true },
+	          'A faire'
+	        ),
 	        this.state.tasks.length ? this.state.tasks.map(function (t, i) {
+	          if (t.finish) return;
 	          var boundDelete = _this2.removeTask.bind(_this2, t.title);
 	          var boundStart = _this2.startTask.bind(_this2, t.title);
 	          return _react2.default.createElement(_CardTask2.default, { title: t.title, labels: t.labels, key: i, onDelete: boundDelete, onStart: boundStart });
 	        }) : "Pas de tâche.",
-	        this.state.inTask ? _react2.default.createElement(_Timer2.default, { time: this.state.time }) : ""
+	        this.state.inTask ? _react2.default.createElement(
+	          'div',
+	          { className: 'foreground' },
+	          _react2.default.createElement(_Timer2.default, {
+	            title: this.state.currentTask,
+	            time: this.state.time,
+	            onClick: this.state.freeze ? this.resumeTask : this.freezeTask,
+	            label: this.state.freeze ? "Reprendre" : "Pause"
+	          })
+	        ) : "",
+	        _react2.default.createElement(_Divider2.default, null),
+	        _react2.default.createElement(
+	          _Subheader2.default,
+	          { inset: true },
+	          'Fini'
+	        ),
+	        this.state.tasks.length ? this.state.tasks.map(function (t, i) {
+	          if (!t.finish) return;
+	          var boundDelete = _this2.removeTask.bind(_this2, t.title);
+	          var boundStart = _this2.startTask.bind(_this2, t.title);
+	          return _react2.default.createElement(_CardTask2.default, { title: t.title, labels: t.labels, key: i, onDelete: boundDelete, onStart: boundStart });
+	        }) : "Pas de tâche."
 	      )
 	    );
 	  }
 	});
 
 	(0, _reactDom.render)(_react2.default.createElement(App, null), document.getElementById('app'));
-	/* WEBPACK VAR INJECTION */}.call(exports, "/"))
 
 /***/ },
 /* 1 */
@@ -35008,7 +35056,6 @@
 	  displayName: 'CardForm',
 	  getInitialState: function getInitialState() {
 	    return {
-	      labels: this.props.labels,
 	      selectedLabels: []
 	    };
 	  },
@@ -35043,7 +35090,7 @@
 	        floatingLabelText: 'Labels',
 	        fullWidth: true,
 	        filter: _AutoComplete2.default.fuzzyFilter,
-	        dataSource: this.state.labels,
+	        dataSource: this.props.labels,
 	        maxSearchResults: 5,
 	        onNewRequest: this.newRequest,
 	        ref: 'AutoComplete'
@@ -40793,19 +40840,11 @@
 
 	var _react2 = _interopRequireDefault(_react);
 
-	var _Paper = __webpack_require__(328);
+	var _RaisedButton = __webpack_require__(376);
 
-	var _Paper2 = _interopRequireDefault(_Paper);
+	var _RaisedButton2 = _interopRequireDefault(_RaisedButton);
 
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
-	var style = {
-	  height: 100,
-	  width: 100,
-	  margin: 20,
-	  textAlign: 'center',
-	  display: 'inline-block'
-	};
 
 	var Timer = _react2.default.createClass({
 	  displayName: 'Timer',
@@ -40815,22 +40854,27 @@
 	    var seconds = time % 60;
 	    return _react2.default.createElement(
 	      'div',
-	      null,
-	      _react2.default.createElement(_Paper2.default, {
-	        style: style,
-	        zDepth: 1,
-	        circle: true,
-	        children: _react2.default.createElement(
-	          'p',
-	          { className: 'timer' },
-	          _react2.default.createElement(
-	            'b',
-	            null,
-	            minutes,
-	            ':',
-	            seconds
-	          )
+	      { className: 'timer-wrapper' },
+	      _react2.default.createElement(
+	        'h1',
+	        null,
+	        this.props.title
+	      ),
+	      _react2.default.createElement(
+	        'p',
+	        { className: 'timer' },
+	        _react2.default.createElement(
+	          'b',
+	          null,
+	          minutes,
+	          ':',
+	          seconds
 	        )
+	      ),
+	      _react2.default.createElement(_RaisedButton2.default, {
+	        label: this.props.label,
+	        primary: true,
+	        onClick: this.props.onClick
 	      })
 	    );
 	  }
@@ -40842,12 +40886,7 @@
 /* 415 */,
 /* 416 */,
 /* 417 */,
-/* 418 */
-/***/ function(module, exports) {
-
-	module.exports = require("path");
-
-/***/ },
+/* 418 */,
 /* 419 */
 /***/ function(module, exports, __webpack_require__) {
 
