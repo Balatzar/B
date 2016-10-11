@@ -1,5 +1,7 @@
 import React from 'react';
-import TaskLabel from "./TaskLabel.jsx";
+
+import Label from "./Label.jsx";
+
 import TextField from 'material-ui/TextField';
 import AutoComplete from 'material-ui/AutoComplete';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -9,6 +11,7 @@ const CardForm = React.createClass({
   getInitialState() {
     return {
       selectedLabels: [],
+      labels: this.props.labels.map(l => l.title),
     }
   },
 
@@ -21,11 +24,13 @@ const CardForm = React.createClass({
 
   newRequest(chosenRequest) {
     const taskLabels = JSON.parse(localStorage.getItem("taskLabels"));
-    taskLabels.push(chosenRequest);
+    const label = this.props.labels.find(l => l.title === chosenRequest);
+    taskLabels.push(label);
     localStorage.setItem("taskLabels", JSON.stringify(taskLabels));
     const selectedLabels = this.state.selectedLabels;
-    selectedLabels.push(chosenRequest);
+    selectedLabels.push(label);
     this.setState({ selectedLabels });
+    console.log(this.state)
     this.refs.AutoComplete.setState({ searchText: "" });
   },
 
@@ -42,13 +47,13 @@ const CardForm = React.createClass({
           floatingLabelText="Labels"
           fullWidth={true}
           filter={AutoComplete.fuzzyFilter}
-          dataSource={this.props.labels}
+          dataSource={this.state.labels}
           maxSearchResults={5}
           onNewRequest={this.newRequest}
           ref="AutoComplete"
         />
         <br />
-        {this.state.selectedLabels.map((l, i) => <RaisedButton label={l} key={i} />)}
+        {this.state.selectedLabels.map((l, i) => <Label title={l.title} color={l.color} key={i} onClick={null} />)}
         <br />
         <RaisedButton
           label="Créer"

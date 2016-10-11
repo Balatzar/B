@@ -19,7 +19,8 @@ var config = {
       }
     ]
   },
-  target: 'node'
+  target: 'node',
+  devtool: 'source-map',
 };
 
 module.exports = config;

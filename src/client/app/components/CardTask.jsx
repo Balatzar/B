@@ -1,7 +1,9 @@
 import React from 'react';
+
+import Label from "./Label.jsx";
+
 import {Card, CardActions, CardHeader} from 'material-ui/Card';
 import RaisedButton from 'material-ui/RaisedButton';
-import FlatButton from 'material-ui/FlatButton';
 
 const CardTask = React.createClass({
   render() {
@@ -10,7 +12,7 @@ const CardTask = React.createClass({
         <CardHeader
           title={this.props.title}
         />
-        {this.props.labels.map((l, i) => <FlatButton label={l} key={i} />)}
+        {this.props.labels.map((l, i) => <Label title={l.title} color={l.color} onClick={() => {console.log("ça marche pas")}} key={i} />)}
         <CardActions>
           <RaisedButton
             label="Commencer"

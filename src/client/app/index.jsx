@@ -1,6 +1,8 @@
 import React from 'react';
 import {render} from 'react-dom';
 
+import stringToColour from "./helpers/stringToColor"
+
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 import Subheader from 'material-ui/Subheader';
@@ -12,7 +14,7 @@ import LabelForm from './components/LabelForm.jsx';
 import AllLabels from './components/AllLabels.jsx';
 import Timer from './components/Timer.jsx';
 
-const time = 10;
+const time = 1200;
 
 const tapEvent = require('react-tap-event-plugin');  
 tapEvent();
@@ -102,7 +104,7 @@ const App = React.createClass({
   },
 
   addLabel() {
-    const label = localStorage.getItem("labelValue");
+    const label = { title: localStorage.getItem("labelValue"), color: stringToColour(localStorage.getItem("labelValue"))};
     const labels = this.state.labels;
     labels.push(label);
     this.setState({ labels });
@@ -112,7 +114,7 @@ const App = React.createClass({
   },
 
   deleteLabel(label) {
-    const labels = this.state.labels.filter(l => l !== label);
+    const labels = this.state.labels.filter(l => l.title !== label);
     this.setState({ labels });
     localStorage.setItem("labels", JSON.stringify(labels));
     console.log(this.state);
