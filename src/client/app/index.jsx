@@ -1,9 +1,6 @@
 import React from 'react';
 import {render} from 'react-dom';
 
-const path = require('path')
-console.log(path.resolve(__dirname))
-
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Divider from 'material-ui/Divider';
 
@@ -13,14 +10,6 @@ import TaskLabel from './components/TaskLabel.jsx';
 import LabelForm from './components/LabelForm.jsx';
 import AllLabels from './components/AllLabels.jsx';
 import Timer from './components/Timer.jsx';
-
-const style = {
-  height: 100,
-  width: 100,
-  margin: 20,
-  textAlign: 'center',
-  display: 'inline-block',
-};
 
 const tapEvent = require('react-tap-event-plugin');  
 tapEvent();
@@ -48,7 +37,22 @@ const App = React.createClass({
       labels,
       time: 20,
       inTask: false,
+      currentTask: "",
+      freeze: false,
     }
+  },
+
+  timer: null,
+
+  startTimer() {
+    this.timer = setInterval(() => {
+      if (this.state.time) {
+        this.setState({ time: this.state.time - 1 });
+      } else {
+        this.setState({ inTask: false, currentTask: "" });
+        clearInterval(this.timer);
+      }
+    }, 1000);
   },
 
   addTask() {
@@ -71,15 +75,18 @@ const App = React.createClass({
 
   startTask(title) {
     this.setState({ inTask: true, time: 20 });
-    const timer = setInterval(() => {
-      if (this.state.time) {
-        this.setState({ time: this.state.time - 1 });
-      } else {
-        this.setState({ inTask: false });
-        clearInterval(timer);
-        dialog.showMessageBox({ type: "info", message: title })
-      }
-    }, 1000);
+    this.setState({ currentTask: title });
+    this.startTimer();
+  },
+
+  freezeTask() {
+    this.setState({ freeze: true });
+    clearInterval(this.timer);
+  },
+
+  resumeTask() {
+    this.setState({ freeze: false });
+    this.startTimer();
   },
 
   addLabel() {
@@ -112,7 +119,12 @@ const App = React.createClass({
             const boundStart = this.startTask.bind(this, t.title);
             return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
           }) : "Pas de tâche."}
-          {this.state.inTask ? <Timer time={this.state.time} /> : ""}
+          {this.state.inTask ? <div className="foreground"><Timer
+            title={this.state.currentTask}
+            time={this.state.time}
+            onClick={this.state.freeze ? this.resumeTask : this.freezeTask}
+            label={this.state.freeze ? "Reprendre" : "Pause"}
+          /></div> : ""}
         </div>
       </MuiThemeProvider>
     );
