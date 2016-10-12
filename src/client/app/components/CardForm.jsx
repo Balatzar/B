@@ -11,7 +11,6 @@ const CardForm = React.createClass({
   getInitialState() {
     return {
       selectedLabels: [],
-      labels: this.props.labels.map(l => l.title),
     }
   },
 
@@ -47,7 +46,7 @@ const CardForm = React.createClass({
           floatingLabelText="Labels"
           fullWidth={true}
           filter={AutoComplete.fuzzyFilter}
-          dataSource={this.state.labels}
+          dataSource={this.props.labels.map(l => l.title)}
           maxSearchResults={5}
           onNewRequest={this.newRequest}
           ref="AutoComplete"

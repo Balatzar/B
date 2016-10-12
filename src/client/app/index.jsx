@@ -17,8 +17,8 @@ import AllLabels from './components/AllLabels.jsx';
 import InTask from './components/InTask.jsx';
 import InPause from './components/InPause.jsx';
 
-const time = 10;
-const timePause = 10;
+const time = 1200;
+const timePause = 300;
 
 const tapEvent = require('react-tap-event-plugin');  
 tapEvent();
