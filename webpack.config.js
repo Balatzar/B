@@ -19,7 +19,7 @@ var config = {
       }
     ]
   },
-  target: 'node',
+  target: 'electron-renderer',
   devtool: 'source-map',
 };
 

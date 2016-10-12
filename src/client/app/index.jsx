@@ -1,6 +1,8 @@
 import React from 'react';
 import {render} from 'react-dom';
 
+const path = require('path');
+
 import stringToColour from "./helpers/stringToColor"
 
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
@@ -60,6 +62,11 @@ const App = React.createClass({
       if (this.state.time) {
         this.setState({ time: this.state.time - 1 });
       } else {
+        const options = {
+          title: "Tâche terminée",
+          body: `La tâche ${this.state.currentTask} est terminée.`,
+        }
+        new Notification(options.title, options);
         clearInterval(this.timer);
         this.finishTask();
         this.setState({ inTask: false });
@@ -74,6 +81,11 @@ const App = React.createClass({
       if (this.state.time) {
         this.setState({ time: this.state.time - 1 });
       } else {
+        const options = {
+          title: "Pause terminée",
+          body: `On s'y remet.`,
+        }
+        new Notification(options.title, options);
         clearInterval(this.timer)
         this.setState({ inPause: false });
         if (this.state.restart) {
