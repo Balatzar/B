@@ -191,7 +191,7 @@ const App = React.createClass({
             if (!t.finish) return;
             const boundDelete = this.removeTask.bind(this, t.title);
             const boundStart = this.startTask.bind(this, t.title);
-            return <CardTask title={t.title} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
+            return <CardTask title={t.title} finished={true} labels={t.labels} key={i} onDelete={boundDelete} onStart={boundStart} />
           }) : "Pas de tâche."}
 
           {this.state.inTask ? <InTask
